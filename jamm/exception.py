@@ -1,0 +1,9 @@
+class JamBase(BaseException): pass
+class Syntax(JamBase): pass
+class Type(JamBase): pass
+class Value(JamBase): pass
+class Lookup(JamBase): pass
+class Math(JamBase): pass
+class System(JamBase): pass
+class Overflow(JamBase): pass
+class Name(JamBase): pass

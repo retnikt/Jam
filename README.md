@@ -36,12 +36,12 @@ Python 2 is not supported, and never will be, because
 ## Installation
 ### Requirements
  - A recent linux OS (must be a Debian, Red Hat, or Arch derivative)
- - [python](https://python.org) >=3.2: Pre-installed on most systems.
- Also available in most package managers.
- - [xdotool](https://www.semicomplete.com/projects/xdotool/semicomplete.com/projects/xdotool): 
- **IMPORTANT NOTE**: Version 3 is required. The version on the 
+ - [python](https://python.org) >=3.2 **with compiled-in `complex` support**: 
+ Pre-installed on most systems. Also available in most package managers.
+ - [xdotool](https://www.semicomplete.com/projects/xdotool/semicomplete.com/projects/xdotool)
+ Version 3.x: **IMPORTANT NOTE**: The version on the 
  website is only version 2. I am not sure where source files for
- version 3,
+ version 3 are, but most package managers have them.
  - [python3-lxml](https://lxml.de): Pre-installed on some systems.
  Also available [on PyPI](https://pypi.python.org/pypi/lxml/4.1.1) 
  and most package managers.
