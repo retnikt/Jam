@@ -3,11 +3,12 @@ import jamm.exception
 import numbers
 
 
-def parse(s, file='<console>'):
+def parse(s, file='<console>', **kwargs):
     """
     Parse a string of Jam Code
     :param s: string
     :param file: file path to use in exceptions. defaults to <console>
+    :param kwargs: initial variables to pass to parser
     :return:
     """
     try:
@@ -16,9 +17,10 @@ def parse(s, file='<console>'):
         raise jamm.exception.Syntax(e)
     if root.tag != 'code':
         raise jamm.exception.Syntax('Invalid root tag "{root}" in file "{file}"'.format(root=root.tag, file=file))
-    _parse(root, file, {})
+    _parse(root, file, kwargs)
 
 
+# noinspection PyShadowingBuiltins
 def _parse(root, file, vars):
     for tag in root:
         if tag.tag == 'if':
@@ -28,7 +30,7 @@ def _parse(root, file, vars):
             condition_type = tag.get('type')
             # type of if statement - variable, key state, window exist/active
             if condition_type in ('eq', 'lt', 'gt', 'lte', 'gte', 'neq'):  # var if statement
-                if 'variable' not in tag.attrib.keys():  # variable not specified
+                if 'variable' not in tag.attrib.keys() or not tag.get('variable'):  # variable not specified
                     raise jamm.exception.Syntax('No variable specified for condition on line {line}'.format(
                         line=tag.sourceline))
                 elif tag.get('variable') not in vars.keys():  # variable doesn't exist
@@ -42,18 +44,22 @@ def _parse(root, file, vars):
                         raise jamm.exception.Type('Invalid target for operator {op}'  # can't use this operator
                                                   ' in condition on line {line}'.format(op=condition_type,
                                                                                         line=tag.sourceline))
-                if condition_type == 'eq':
-                    value = evaluate(tag.get('value'), vars, tag.sourceline, file)
+                if (condition_type == 'eq' and   # == != true
+                        evaluate(tag.get('value'), vars, tag.sourceline, file) == tag.get('value')) or (
+                    condition_type == 'neq' and
+                        evaluate(tag.get('value'), vars, tag.sourceline, file) != tag.get('value')) or (
+                    condition_type == 'true'
+                ):
+                    _parse(tag, file, vars)
 
-            elif condition_type == 'true':  # always true
-                _parse(tag, file, vars)   # recursive processing
             elif condition_type == 'false':  # always false
-                _parse(tag, file, vars)   # recursive processing
+                pass
             else:
                 raise jamm.exception.Syntax('Invalid type attribute "{type}" for condition on line {line}'.format(
                     type=condition_type, line=tag.sourceline))
 
 
+# noinspection PyShadowingBuiltins
 def evaluate(s, vars, line, file):
     # TODO: implement functions, maths etc.
     escape = False
@@ -66,11 +72,11 @@ def evaluate(s, vars, line, file):
             if s[index+1] == '%':  # escaped percent sign
                 escape = True
             elif close:  # expecting closing percent
-                close = False
                 # `close` will only ever be true when i'm a starting percent sign
                 # in which case var_start will have been defined.
                 # noinspection PyUnboundLocalVariable
                 var_name = s[var_start:index-1]
+                return vars[var_name]
             else:
                 close = True
                 var_start = index + 1
