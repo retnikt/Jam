@@ -45,17 +45,17 @@ def _parse(root, file, vars):
                                                   ' in condition on line {line}'.format(op=condition_type,
                                                                                         line=tag.sourceline))
                 if (condition_type == 'eq' and   # == != < <= > >= true
-                        evaluate(tag.get('value'), vars, tag.sourceline, file) == tag.get('value')) or (
+                        evaluate(tag.get('value'), vars, tag.sourceline) == tag.get('value')) or (
                     condition_type == 'neq' and
-                        evaluate(tag.get('value'), vars, tag.sourceline, file) != tag.get('value')) or (
+                        evaluate(tag.get('value'), vars, tag.sourceline) != tag.get('value')) or (
                     condition_type == 'lt' and
-                        evaluate(tag.get('value'), vars, tag.sourceline, file) < tag.get('value')) or (
+                        evaluate(tag.get('value'), vars, tag.sourceline) < tag.get('value')) or (
                     condition_type == 'lte' and
-                        evaluate(tag.get('value'), vars, tag.sourceline, file) <= tag.get('value')) or (
+                        evaluate(tag.get('value'), vars, tag.sourceline) <= tag.get('value')) or (
                     condition_type == 'gt' and
-                        evaluate(tag.get('value'), vars, tag.sourceline, file) > tag.get('value')) or (
+                        evaluate(tag.get('value'), vars, tag.sourceline) > tag.get('value')) or (
                     condition_type == 'gte' and
-                        evaluate(tag.get('value'), vars, tag.sourceline, file) >= tag.get('value')) or (
+                        evaluate(tag.get('value'), vars, tag.sourceline) >= tag.get('value')) or (
                     condition_type == 'true'
                 ):
                     _parse(tag, file, vars)
@@ -67,7 +67,7 @@ def _parse(root, file, vars):
 
 
 # noinspection PyShadowingBuiltins
-def evaluate(s, vars, line, file):
+def evaluate(s, vars, line):
     # TODO: implement functions, maths etc.
     escape = False
     close = False
@@ -83,6 +83,9 @@ def evaluate(s, vars, line, file):
                 # in which case var_start will have been defined.
                 # noinspection PyUnboundLocalVariable
                 var_name = s[var_start:index-1]
+                if var_name not in vars.keys():
+                    raise jamm.exception.Name('Variable {variable} not found on line {line}'.format(variable=var_name,
+                                                                                                    line=line))
                 return vars[var_name]
             else:
                 close = True
