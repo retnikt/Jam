@@ -47,6 +47,8 @@ Python 2 is not supported, and never will be, because
  and most package managers.
  - [python-evdev](https://python-evdev.readthedocs.io): Available
  through most package managers and [on PyPI](https://pypi.python.org/pypi/evdev)
+ - tkinter: should be included in your Python installation. You
+ may need to install the package `python3-tk`.
  
 ## Contributing
 Don't.  
