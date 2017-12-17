@@ -44,15 +44,22 @@ def _parse(root, file, vars):
                         raise jamm.exception.Type('Invalid target for operator {op}'  # can't use this operator
                                                   ' in condition on line {line}'.format(op=condition_type,
                                                                                         line=tag.sourceline))
-                if (condition_type == 'eq' and   # == != true
+                if (condition_type == 'eq' and   # == != < <= > >= true
                         evaluate(tag.get('value'), vars, tag.sourceline, file) == tag.get('value')) or (
                     condition_type == 'neq' and
                         evaluate(tag.get('value'), vars, tag.sourceline, file) != tag.get('value')) or (
+                    condition_type == 'lt' and
+                        evaluate(tag.get('value'), vars, tag.sourceline, file) < tag.get('value')) or (
+                    condition_type == 'lte' and
+                        evaluate(tag.get('value'), vars, tag.sourceline, file) <= tag.get('value')) or (
+                    condition_type == 'gt' and
+                        evaluate(tag.get('value'), vars, tag.sourceline, file) > tag.get('value')) or (
+                    condition_type == 'gte' and
+                        evaluate(tag.get('value'), vars, tag.sourceline, file) >= tag.get('value')) or (
                     condition_type == 'true'
                 ):
                     _parse(tag, file, vars)
-
-            elif condition_type == 'false':  # always false
+            elif condition_type == 'false':  # always false - pass so doesn't get caught by else and error thrown
                 pass
             else:
                 raise jamm.exception.Syntax('Invalid type attribute "{type}" for condition on line {line}'.format(
